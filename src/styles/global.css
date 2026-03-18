@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Fredoka+One&display=swap');
+
+:root {
+  --bg-deep: #0a0e1a;
+  --bg-card: #111827;
+  --bg-card2: #1a2235;
+  --bg-hover: #1e2d45;
+  --border: #2a3a55;
+  --border-bright: #3d5a80;
+  --accent-gold: #f4c430;
+  --accent-gold-dim: #c9a227;
+  --accent-blue: #4a9eff;
+  --accent-green: #4caf82;
+  --accent-red: #e05c5c;
+  --accent-purple: #9b6dff;
+  --text-primary: #e8eef8;
+  --text-secondary: #8a9bb5;
+  --text-dim: #556070;
+  --shadow-glow: 0 0 30px rgba(74, 158, 255, 0.15);
+  --shadow-gold: 0 0 20px rgba(244, 196, 48, 0.3);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  direction: rtl;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Varela Round', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse at 20% 10%, rgba(74, 158, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(155, 109, 255, 0.05) 0%, transparent 50%);
+}
+
+h1, h2, h3 {
+  font-family: 'Fredoka One', cursive;
+  letter-spacing: 0.5px;
+}
+
+button {
+  font-family: 'Varela Round', sans-serif;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+input, select, textarea {
+  font-family: 'Varela Round', sans-serif;
+  direction: rtl;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-card); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* Stars background effect */
+.stars-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 85%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card styles */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.card-hover {
+  transition: all 0.2s ease;
+}
+.card-hover:hover {
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* Button variants */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(74, 158, 255, 0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.4);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+  color: #1a1200;
+  box-shadow: 0 4px 15px rgba(244, 196, 48, 0.3);
+}
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-green {
+  background: linear-gradient(135deg, var(--accent-green), #2d8f5e);
+  color: white;
+}
+.btn-green:hover { transform: translateY(-2px); }
+
+.btn-red {
+  background: linear-gradient(135deg, var(--accent-red), #c04040);
+  color: white;
+}
+.btn-red:hover { transform: translateY(-2px); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+/* Input styles */
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+}
+.input-field::placeholder { color: var(--text-dim); }
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-green { background: rgba(76, 175, 130, 0.2); color: var(--accent-green); }
+.badge-red { background: rgba(224, 92, 92, 0.2); color: var(--accent-red); }
+.badge-blue { background: rgba(74, 158, 255, 0.2); color: var(--accent-blue); }
+.badge-gold { background: rgba(244, 196, 48, 0.2); color: var(--accent-gold); }
+.badge-dim { background: rgba(138, 155, 181, 0.15); color: var(--text-secondary); }
+
+/* Online dot */
+.online-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+  animation: pulse-online 2s infinite;
+  display: inline-block;
+}
+
+@keyframes pulse-online {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Loading spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Chess pieces emoji sizing */
+.chess-piece {
+  font-size: 2rem;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Tablet responsive */
+@media (max-width: 768px) {
+  html { font-size: 14px; }
+  .page-container { padding: 12px; }
+}
