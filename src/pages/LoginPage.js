@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
-import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { refreshProfile } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,9 +15,11 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
+    const fakeEmail = `${username.trim().toLowerCase().replace(/\s+/g, '.')}@shachmat-kat.local`;
+
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: fakeEmail,
         password
       });
 
@@ -27,50 +27,28 @@ const LoginPage = () => {
 
       if (data.user) {
         const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
+          .from('profiles').select('*').eq('id', data.user.id).single();
 
-        if (profileError || !profile) {
-          throw new Error('לא נמצא פרופיל משתמש');
-        }
+        if (profileError || !profile) throw new Error('לא נמצא פרופיל משתמש');
 
-        // Update online status
         await supabase.from('profiles').update({ is_online: true, last_seen: new Date().toISOString() }).eq('id', data.user.id);
 
-        if (!profile.is_approved) {
-          navigate('/waiting');
-          return;
-        }
-
-        if (profile.is_suspended) {
-          navigate('/waiting?suspended=true');
-          return;
-        }
+        if (!profile.is_approved) { navigate('/waiting'); return; }
+        if (profile.is_suspended) { navigate('/waiting?suspended=true'); return; }
 
         if (profile.role === 'admin') navigate('/admin');
         else if (profile.role === 'teacher') navigate('/teacher');
         else navigate('/child');
       }
     } catch (err) {
-      console.error(err);
-      setError(err.message === 'Invalid login credentials'
-        ? 'אימייל או סיסמה שגויים'
-        : err.message || 'שגיאה בהתחברות');
+      setError(err.message === 'Invalid login credentials' ? 'שם משתמש או סיסמה שגויים' : err.message || 'שגיאה בהתחברות');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
-    }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -87,12 +65,7 @@ const LoginPage = () => {
       >
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <span style={{ fontSize: '3.5rem' }}>♟️</span>
-          <h1 style={{
-            fontFamily: 'Fredoka One, cursive',
-            fontSize: '2rem',
-            color: 'var(--accent-blue)',
-            marginTop: '8px'
-          }}>
+          <h1 style={{ fontFamily: 'Fredoka One, cursive', fontSize: '2rem', color: 'var(--accent-blue)', marginTop: '8px' }}>
             כניסה למערכת
           </h1>
         </div>
@@ -100,14 +73,14 @@ const LoginPage = () => {
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              אימייל 📧
+              שם משתמש 🔤
             </label>
             <input
               className="input-field"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="israel123"
               required
               disabled={loading}
             />
@@ -170,33 +143,10 @@ const LoginPage = () => {
           </motion.button>
         </form>
 
-        <div style={{
-          marginTop: '24px',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px'
-        }}>
-          <Link to="/register/child" style={{
-            color: 'var(--accent-gold)',
-            fontSize: '0.9rem',
-            transition: 'opacity 0.2s'
-          }}>
-            🧒 אני ילד/ה — הרשמה
-          </Link>
-          <Link to="/register/teacher" style={{
-            color: 'var(--accent-purple)',
-            fontSize: '0.9rem',
-            transition: 'opacity 0.2s'
-          }}>
-            👩‍🏫 אני גננת — הרשמה
-          </Link>
-          <Link to="/" style={{
-            color: 'var(--text-dim)',
-            fontSize: '0.85rem'
-          }}>
-            ← חזרה
-          </Link>
+        <div style={{ marginTop: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <Link to="/register/child" style={{ color: 'var(--accent-gold)', fontSize: '0.9rem' }}>🧒 אני ילד/ה — הרשמה</Link>
+          <Link to="/register/teacher" style={{ color: 'var(--accent-purple)', fontSize: '0.9rem' }}>👩‍🏫 אני גננת — הרשמה</Link>
+          <Link to="/" style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>← חזרה</Link>
         </div>
       </motion.div>
     </div>
