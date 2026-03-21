@@ -1,6 +1,4 @@
-מצוין! רואה את App.js פתוח ✅
-מחקי את כל התוכן (Ctrl+A ואז Delete) והדביקי את זה:
-javascriptimport React from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import './styles/global.css';
@@ -73,4 +71,4 @@ function App() {
   );
 }
 
-export default App;Add forgot password
+export default App;
