@@ -77,22 +77,28 @@ export default function TeacherDashboard() {
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1a0a2e, #0f3460)', direction: 'rtl', padding: 20 }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-          <h1 style={{ color: '#ffd700', fontFamily: 'Fredoka One, sans-serif', fontSize: 28, margin: 0 }}>👩‍🏫 שלום, {profile.full_name}!</h1>
+          <div>
+            <h1 style={{ color: '#ffd700', fontFamily: 'Fredoka One, sans-serif', fontSize: 28, margin: 0 }}>👩‍🏫 שלום, {profile.full_name}!</h1>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Varela Round, sans-serif', margin: '4px 0 0', fontSize: 14 }}>גן {profile.kindergarten_name}</p>
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => setPlayingBot(true)} style={{ padding: '10px 20px', borderRadius: 12, border: 'none', background: '#4cc9f0', color: 'white', cursor: 'pointer', fontFamily: 'Fredoka One, sans-serif', fontSize: 15 }}>♟️ שחק נגד רובוט</button>
             <button onClick={signOut} style={{ padding: '10px 16px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: 'white', cursor: 'pointer', fontFamily: 'Varela Round, sans-serif' }}>יציאה</button>
           </div>
         </div>
+
+        {/* Tabs */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
           {[['children', '👦 ילדים'], ['groups', '👥 קבוצות']].map(([t, label]) => (
             <button key={t} onClick={() => setTab(t)} style={{ padding: '10px 24px', borderRadius: 12, border: 'none', cursor: 'pointer', background: tab === t ? '#ffd700' : 'rgba(255,255,255,0.1)', color: tab === t ? '#2c1810' : 'white', fontFamily: 'Fredoka One, sans-serif', fontSize: 16 }}>{label}</button>
           ))}
         </div>
+
         {loading ? <div style={{ textAlign: 'center', color: 'white', padding: 40 }}>טוען...</div> : (
           <>
             {tab === 'children' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {children.length === 0 && <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40, fontFamily: 'Varela Round, sans-serif' }}>אין ילדים רוסים מגן זה עדיין.</div>}
+                {children.length === 0 && <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40, fontFamily: 'Varela Round, sans-serif' }}>אין ילדים רשומים מגן זה עדיין</div>}
                 {children.map(child => (
                   <div key={child.id} style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                     <div>
@@ -100,36 +106,37 @@ export default function TeacherDashboard() {
                       <div style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>{child.email}</div>
                       <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 12, fontFamily: 'Varela Round, sans-serif', background: child.is_approved ? 'rgba(72,199,142,0.2)' : 'rgba(244,162,97,0.2)', color: child.is_approved ? '#48c78e' : '#f4a261' }}>
-                          {child.is_approved ? '✓ מאוחר' : '⏳ ממתיל'}
+                          {child.is_approved ? '✓ מאושר' : '⏳ ממתין'}
                         </span>
-                        {child.group_id && <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 12, background: 'rgba(76,201,240,0.2)', color: '#4cc9f0' }}>
+                        {child.group_id && <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 12, fontFamily: 'Varela Round, sans-serif', background: 'rgba(76,201,240,0.2)', color: '#4cc9f0' }}>
                           {groups.find(g => g.id === child.group_id)?.name || 'קבוצה'}
                         </span>}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <select onChange={e => assignToGroup(child.id, e.target.value)} value={child.group_id || ''} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <select onChange={e => assignToGroup(child.id, e.target.value)} value={child.group_id || ''} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>
                         <option value="">ללא קבוצה</option>
                         {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
                       </select>
-                      <button onClick={() => approveChild(child.id, child.is_approved)} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: child.is_approved ? 'rgba(255,255,255,0.1)' : '#48c78e', color: 'white' }}>
+                      <button onClick={() => approveChild(child.id, child.is_approved)} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: child.is_approved ? 'rgba(255,255,255,0.1)' : '#48c78e', color: 'white', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>
                         {child.is_approved ? 'בטל' : '✓ אשר'}
                       </button>
-                      <button onClick={() => suspendChild(child.id, child.is_suspended)} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f4a261', color: 'white' }}>
+                      <button onClick={() => suspendChild(child.id, child.is_suspended)} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f4a261', color: 'white', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>
                         {child.is_suspended ? 'שחרר' : 'השהה'}
                       </button>
-                      <button onClick={() => deleteChild(child.id)} style={{ padding: '8px 12px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f72585', color: 'white' }}>🗑️</button>
+                      <button onClick={() => deleteChild(child.id)} style={{ padding: '8px 12px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f72585', color: 'white', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>🗑️</button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
+
             {tab === 'groups' && (
               <div>
                 <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginBottom: 16 }}>
-                  <h3 style={{ color: '#ffd700', fontFamily: 'Fredoka One, sans-serif', margin: '0 0 12px' }}>יצירת קבוצה חדשה  ({groups.length}/3)</h3>
+                  <h3 style={{ color: '#ffd700', fontFamily: 'Fredoka One, sans-serif', margin: '0 0 12px' }}>יצירת קבוצה חדשה ({groups.length}/3)</h3>
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <input value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="שם הקבוצה" style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '2px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none', direction: 'rtl' }} />
+                    <input value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="שם הקבוצה" style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '2px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white', fontFamily: 'Varela Round, sans-serif', outline: 'none', direction: 'rtl' }} />
                     <button onClick={createGroup} disabled={groups.length >= 3} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: groups.length >= 3 ? 'rgba(255,255,255,0.1)' : '#48c78e', color: 'white', cursor: groups.length >= 3 ? 'not-allowed' : 'pointer', fontFamily: 'Fredoka One, sans-serif', fontSize: 16 }}>+ צור</button>
                   </div>
                 </div>
@@ -138,12 +145,14 @@ export default function TeacherDashboard() {
                     <div key={g.id} style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <div style={{ color: 'white', fontFamily: 'Fredoka One, sans-serif', fontSize: 20 }}>👥 {g.name}</div>
-                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{children.filter(c => c.group_id === g.id).length} ילדים</div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Varela Round, sans-serif', fontSize: 13 }}>
+                          {children.filter(c => c.group_id === g.id).length} ילדים
+                        </div>
                       </div>
-                      <button onClick={() => deleteGroup(g.id)} style={{ padding: '8px 16px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f72585', color: 'white' }}>🗑️ מכק'</button>
+                      <button onClick={() => deleteGroup(g.id)} style={{ padding: '8px 16px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f72585', color: 'white', fontFamily: 'Varela Round, sans-serif' }}>🗑️ מחק</button>
                     </div>
                   ))}
-                  {groups.length === 0 && <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>אין ח��וףה! u^ףבוצו עם.</div>}
+                  {groups.length === 0 && <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40, fontFamily: 'Varela Round, sans-serif' }}>אין קבוצות עדיין</div>}
                 </div>
               </div>
             )}
