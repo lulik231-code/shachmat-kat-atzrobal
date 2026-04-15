@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase, ADMIN_EMAIL } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
 
-export function AuthProvider({ children }) {
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,52 +20,54 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
-      else { setProfile(null); setLoading(false); }
+      else {
+        setProfile(null);
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  async function fetchProfile(userId) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    setProfile(data);
-    setLoading(false);
-  }
+  const fetchProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  async function signUp({ email, password, fullName, role, kindergartenName, teacherName }) {
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    return { data, error };
+  };
+
+  const signUp = async (email, password, fullName, role) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+    if (error) return { data, error };
 
-    const isAdmin = email === ADMIN_EMAIL;
-    const profileData = {
-      id: data.user.id,
-      email,
-      full_name: fullName,
-      role: isAdmin ? 'admin' : role,
-      is_approved: isAdmin || false,
-      kindergarten_name: kindergartenName || null,
-    };
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ id: data.user.id, email, full_name: fullName, role }]);
+      if (profileError) return { data, error: profileError };
+    }
+    return { data, error };
+  };
 
-    const { error: profileError } = await supabase.from('profiles').upsert(profileData);
-    if (profileError) throw profileError;
-
-    return data;
-  }
-
-  async function signIn({ email, password }) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  }
-
-  async function signOut() {
+  const signOut = async () => {
     await supabase.auth.signOut();
-  }
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, profile, loading, signUp, signIn, signOut, fetchProfile }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+  const value = { user, profile, loading, signIn, signUp, signOut };
 
-export const useAuth = () => useContext(AuthContext);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
